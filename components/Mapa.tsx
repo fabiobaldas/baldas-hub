@@ -5,6 +5,13 @@ import dynamic from 'next/dynamic'
 
 const NITEROI_CENTER: [number, number] = [-22.8838, -43.1044]
 const STORAGE_KEY = 'baldas-condominios'
+const SENHA_HASH = 'a09abc9220bf7b0d3df6eab6173efb8c93c709ba4d11d1dd49c73e7e76295fc7'
+const AUTH_KEY = 'baldas-auth'
+
+async function hashSenha(senha: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha))
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 interface Condominio {
   id: number
@@ -32,7 +39,11 @@ const MapaLeaflet = dynamic(() => import('./MapaLeaflet'), { ssr: false, loading
 
 export default function Mapa() {
   const [condominios, setCondominios] = useState<Condominio[]>([])
+  const [autenticado, setAutenticado] = useState(false)
   const [showAdmin, setShowAdmin] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [senhaInput, setSenhaInput] = useState('')
+  const [erroLogin, setErroLogin] = useState('')
   const [form, setForm] = useState({ nome: '', endereco: '', unidades: '' })
   const [geocoding, setGeocoding] = useState(false)
   const [erro, setErro] = useState('')
@@ -42,7 +53,39 @@ export default function Mapa() {
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) setCondominios(JSON.parse(saved))
+    // Verificar se já está autenticado na sessão
+    if (sessionStorage.getItem(AUTH_KEY) === '1') setAutenticado(true)
   }, [])
+
+  const handleAbrirAdmin = () => {
+    if (autenticado) {
+      setShowAdmin(!showAdmin)
+    } else {
+      setShowLoginModal(true)
+      setSenhaInput('')
+      setErroLogin('')
+    }
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const hash = await hashSenha(senhaInput)
+    if (hash === SENHA_HASH) {
+      sessionStorage.setItem(AUTH_KEY, '1')
+      setAutenticado(true)
+      setShowLoginModal(false)
+      setShowAdmin(true)
+      setSenhaInput('')
+      setErroLogin('')
+    } else {
+      setErroLogin('Senha incorreta.')
+      setSenhaInput('')
+    }
+  }
+
+  const handleFecharAdmin = () => {
+    setShowAdmin(false)
+  }
 
   const salvar = (lista: Condominio[]) => {
     setCondominios(lista)
@@ -104,7 +147,7 @@ export default function Mapa() {
             </p>
           </div>
           <button
-            onClick={() => setShowAdmin(!showAdmin)}
+            onClick={handleAbrirAdmin}
             className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl transition-colors shrink-0"
             style={{
               backgroundColor: showAdmin ? '#0A3244' : '#F0F5F7',
@@ -113,12 +156,55 @@ export default function Mapa() {
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
             {showAdmin ? 'Fechar Gerenciamento' : 'Gerenciar Condomínios'}
           </button>
         </div>
+
+        {/* Modal de senha */}
+        {showLoginModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(10,50,68,0.5)' }}
+            onClick={e => { if (e.target === e.currentTarget) { setShowLoginModal(false); setSenhaInput('') } }}
+          >
+            <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl mx-4">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#F0F5F7' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A3244" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </span>
+                <div>
+                  <p className="font-bold text-sm" style={{ color: '#0A3244' }}>Área restrita</p>
+                  <p className="text-xs" style={{ color: '#8FA3AE' }}>Digite a senha para continuar</p>
+                </div>
+              </div>
+              <form onSubmit={handleLogin} className="flex flex-col gap-3">
+                <input
+                  type="password"
+                  placeholder="Senha"
+                  value={senhaInput}
+                  onChange={e => setSenhaInput(e.target.value)}
+                  autoFocus
+                  className="w-full text-sm px-4 py-3 rounded-xl outline-none"
+                  style={{ border: erroLogin ? '1px solid #e53e3e' : '1px solid #D6E8EF', color: '#0F1923' }}
+                />
+                {erroLogin && <p className="text-xs" style={{ color: '#e53e3e' }}>{erroLogin}</p>}
+                <button
+                  type="submit"
+                  className="w-full text-white font-semibold py-3 rounded-xl text-sm transition-colors"
+                  style={{ backgroundColor: '#0d6e8a' }}
+                >
+                  Entrar
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Mapa Leaflet (gratuito, sem API key) */}
         <div className="mb-6">
