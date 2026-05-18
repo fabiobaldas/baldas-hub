@@ -63,25 +63,14 @@ export default function Footer() {
             <p className="font-semibold text-xs uppercase tracking-wider mb-4" style={{ color: '#A8CDD9' }}>Área Interna</p>
             <nav className="flex flex-col gap-2">
               <Link
-                href="/admin/blog"
+                href="/admin"
                 className="text-sm transition-colors"
                 style={{ color: '#A8CDD9' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
               >
-                🔐 Painel do Blog
+                🔐 Painel Administrativo
               </Link>
-              <a
-                href="https://conciliacao-baldashub.onrender.com"
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm transition-colors"
-                style={{ color: '#A8CDD9' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
-              >
-                📊 Sistema de Conciliação
-              </a>
             </nav>
           </div>
 
