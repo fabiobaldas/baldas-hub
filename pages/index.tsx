@@ -5,6 +5,7 @@ import Servicos from '../components/Servicos'
 import Planos from '../components/Planos'
 import Mapa from '../components/Mapa'
 import Footer from '../components/Footer'
+import { DottedSurface } from '../components/ui/dotted-surface'
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <DottedSurface />
       <Header />
       <main>
         <Hero />
