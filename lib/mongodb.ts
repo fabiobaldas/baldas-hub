@@ -2,24 +2,25 @@ import { MongoClient } from 'mongodb'
 
 const uri = process.env.MONGODB_URI || ''
 
-let clientPromise: Promise<MongoClient>
-
 declare global {
   // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
-if (!uri) {
-  // Durante o build estático, retorna uma promise que nunca resolve
-  // Os getServerSideProps têm try/catch, então isso é seguro
-  clientPromise = new Promise(() => {})
-} else if (process.env.NODE_ENV === 'development') {
-  if (!global._mongoClientPromise) {
-    global._mongoClientPromise = new MongoClient(uri).connect()
+// Conexão lazy — só conecta quando getClient() é chamado (em runtime, não no build)
+export function getClient(): Promise<MongoClient> {
+  if (!uri) return Promise.reject(new Error('MONGODB_URI não definida'))
+
+  if (process.env.NODE_ENV === 'development') {
+    if (!global._mongoClientPromise) {
+      global._mongoClientPromise = new MongoClient(uri).connect()
+    }
+    return global._mongoClientPromise
   }
-  clientPromise = global._mongoClientPromise
-} else {
-  clientPromise = new MongoClient(uri).connect()
+
+  // Em produção, cria um novo cliente por módulo
+  // (Vercel isola cada invocação serverless)
+  return new MongoClient(uri).connect()
 }
 
-export default clientPromise
+export default getClient

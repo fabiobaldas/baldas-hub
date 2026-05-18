@@ -2,7 +2,7 @@ import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
-import clientPromise from '../../lib/mongodb'
+import getClient from '../../lib/mongodb'
 
 interface Post {
   _id: string
@@ -130,7 +130,7 @@ export default function PostPage({ post }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   try {
-    const client = await clientPromise
+    const client = await getClient()
     const post = await client
       .db('baldashub')
       .collection('posts')
