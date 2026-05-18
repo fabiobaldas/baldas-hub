@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="pt-28 pb-20 lg:pt-36 lg:pb-28" style={{ backgroundColor: '#F8FAFB' }}>
+    <section className="pt-28 pb-20 lg:pt-36 lg:pb-28">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
