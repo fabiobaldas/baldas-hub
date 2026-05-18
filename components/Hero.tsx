@@ -50,9 +50,9 @@ export default function Hero() {
             {/* Métricas */}
             <div className="flex gap-6" style={{ borderTop: '1px solid #D6E8EF', paddingTop: '1.5rem' }}>
               {[
-                { valor: '12+', label: 'Condomínios' },
+                { valor: '1+', label: 'Condomínios' },
                 { valor: 'Niterói', label: 'Região de atuação' },
-                { valor: '2020', label: 'Desde' },
+                { valor: '2026', label: 'Desde' },
               ].map((m, i) => (
                 <div key={i} className={i > 0 ? 'pl-6' : ''} style={i > 0 ? { borderLeft: '1px solid #D6E8EF' } : {}}>
                   <p className="font-bold text-2xl" style={{ color: '#0A3244' }}>{m.valor}</p>
