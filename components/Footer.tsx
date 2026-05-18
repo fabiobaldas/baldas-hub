@@ -1,9 +1,11 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 const navLinks = [
   { href: '#servicos', label: 'Serviços' },
   { href: '#planos', label: 'Planos' },
   { href: '#mapa', label: 'Mapa' },
+  { href: '/blog', label: 'Blog' },
   { href: '#contato', label: 'Contato' },
 ]
 
@@ -11,7 +13,7 @@ export default function Footer() {
   return (
     <footer id="contato" style={{ backgroundColor: '#0A3244', color: 'white' }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Identidade */}
           <div>
             <div className="flex items-center gap-3 mb-3">
@@ -29,17 +31,57 @@ export default function Footer() {
             <p className="font-semibold text-xs uppercase tracking-wider mb-4" style={{ color: '#A8CDD9' }}>Navegação</p>
             <nav className="flex flex-col gap-2">
               {navLinks.map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  className="text-sm transition-colors"
-                  style={{ color: '#A8CDD9' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
-                >
-                  {l.label}
-                </a>
+                l.href.startsWith('/') ? (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="text-sm transition-colors"
+                    style={{ color: '#A8CDD9' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
+                  >
+                    {l.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={l.href}
+                    href={l.href}
+                    className="text-sm transition-colors"
+                    style={{ color: '#A8CDD9' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
+                  >
+                    {l.label}
+                  </a>
+                )
               ))}
+            </nav>
+          </div>
+
+          {/* Área Interna */}
+          <div>
+            <p className="font-semibold text-xs uppercase tracking-wider mb-4" style={{ color: '#A8CDD9' }}>Área Interna</p>
+            <nav className="flex flex-col gap-2">
+              <Link
+                href="/admin/blog"
+                className="text-sm transition-colors"
+                style={{ color: '#A8CDD9' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
+              >
+                🔐 Painel do Blog
+              </Link>
+              <a
+                href={process.env.NEXT_PUBLIC_CONCILIACAO_URL || '#'}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm transition-colors"
+                style={{ color: '#A8CDD9' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#A8CDD9')}
+              >
+                📊 Sistema de Conciliação
+              </a>
             </nav>
           </div>
 
