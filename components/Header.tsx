@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const links = [
   { href: '#servicos', label: 'Serviços' },
   { href: '#planos', label: 'Planos' },
   { href: '#mapa', label: 'Mapa' },
+  { href: '/blog', label: 'Blog' },
   { href: '#contato', label: 'Contato' },
 ]
 
@@ -36,16 +38,29 @@ export default function Header() {
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-6">
             {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-sm font-medium transition-colors duration-150"
-                style={{ color: '#4A6572' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#0A3244')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#4A6572')}
-              >
-                {l.label}
-              </a>
+              l.href.startsWith('/') ? (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="text-sm font-medium transition-colors duration-150"
+                  style={{ color: '#4A6572' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#0A3244')}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#4A6572')}
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="text-sm font-medium transition-colors duration-150"
+                  style={{ color: '#4A6572' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#0A3244')}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#4A6572')}
+                >
+                  {l.label}
+                </a>
+              )
             ))}
             <a
               href="https://wa.me/5521971788414"
@@ -87,15 +102,27 @@ export default function Header() {
         >
           <nav className="flex flex-col gap-3 bg-white rounded-xl px-4 py-4 shadow-lg">
             {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-sm font-medium"
-                style={{ color: '#4A6572' }}
-              >
-                {l.label}
-              </a>
+              l.href.startsWith('/') ? (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-medium"
+                  style={{ color: '#4A6572' }}
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-sm font-medium"
+                  style={{ color: '#4A6572' }}
+                >
+                  {l.label}
+                </a>
+              )
             ))}
             <a
               href="https://wa.me/5521971788414"
