@@ -1,43 +1,27 @@
-import { useEffect, useState } from 'react'
+import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
+import clientPromise from '../../lib/mongodb'
 
 interface Post {
-  id: string
+  _id: string
   slug: string
   titulo: string
   resumo: string
-  conteudo: string
   imagem: string
   data: string
-  publicado: boolean
 }
+
+interface Props { posts: Post[] }
 
 function formatarData(data: string) {
   const [ano, mes, dia] = data.split('-')
-  const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
   return `${dia} ${meses[parseInt(mes) - 1]} ${ano}`
 }
 
-export default function BlogIndex() {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [carregando, setCarregando] = useState(true)
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('baldas-blog-posts')
-      const todos: Post[] = raw ? JSON.parse(raw) : []
-      const publicados = todos
-        .filter(p => p.publicado)
-        .sort((a, b) => b.data.localeCompare(a.data))
-      setPosts(publicados)
-    } catch {
-      setPosts([])
-    }
-    setCarregando(false)
-  }, [])
-
+export default function BlogIndex({ posts }: Props) {
   return (
     <>
       <Head>
@@ -46,7 +30,6 @@ export default function BlogIndex() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* Header fixo */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -54,11 +37,7 @@ export default function BlogIndex() {
               <Image src="/logo.jpeg" alt="Baldas Hub" width={36} height={36} className="rounded-md" />
               <span className="font-bold text-lg" style={{ color: '#0A3244' }}>Baldas Hub Condominial</span>
             </Link>
-            <Link
-              href="/"
-              className="text-sm font-medium transition-colors duration-150"
-              style={{ color: '#4A6572' }}
-            >
+            <Link href="/" className="text-sm font-medium" style={{ color: '#4A6572' }}>
               ← Voltar ao site
             </Link>
           </div>
@@ -67,8 +46,6 @@ export default function BlogIndex() {
 
       <main className="pt-24 pb-20 min-h-screen" style={{ backgroundColor: '#F8FAFB' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* Cabeçalho da seção */}
           <div className="mb-12 text-center">
             <span
               className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4"
@@ -76,33 +53,13 @@ export default function BlogIndex() {
             >
               Nosso Blog
             </span>
-            <h1 className="text-4xl font-bold mb-4" style={{ color: '#0A3244' }}>
-              Artigos e Novidades
-            </h1>
+            <h1 className="text-4xl font-bold mb-4" style={{ color: '#0A3244' }}>Artigos e Novidades</h1>
             <p className="text-lg max-w-xl mx-auto" style={{ color: '#4A6572' }}>
               Dicas, notícias e informações sobre administração condominial em Niterói.
             </p>
           </div>
 
-          {/* Estado de carregamento */}
-          {carregando && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-white shadow-sm">
-                  <div className="h-48 bg-gray-200" />
-                  <div className="p-6">
-                    <div className="h-4 bg-gray-200 rounded mb-3 w-1/3" />
-                    <div className="h-6 bg-gray-200 rounded mb-2" />
-                    <div className="h-4 bg-gray-200 rounded mb-1" />
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Sem posts */}
-          {!carregando && posts.length === 0 && (
+          {posts.length === 0 && (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">📝</div>
               <h2 className="text-xl font-semibold mb-2" style={{ color: '#0A3244' }}>Nenhum artigo ainda</h2>
@@ -110,16 +67,14 @@ export default function BlogIndex() {
             </div>
           )}
 
-          {/* Grid de posts */}
-          {!carregando && posts.length > 0 && (
+          {posts.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map(post => (
-                <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
+                <Link key={post._id} href={`/blog/${post.slug}`} className="group block">
                   <article
                     className="rounded-2xl overflow-hidden shadow-sm transition-shadow duration-200 group-hover:shadow-md h-full flex flex-col"
                     style={{ backgroundColor: '#fff' }}
                   >
-                    {/* Imagem */}
                     {post.imagem ? (
                       <div className="relative h-48 overflow-hidden">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -137,16 +92,11 @@ export default function BlogIndex() {
                         </svg>
                       </div>
                     )}
-
-                    {/* Conteúdo */}
                     <div className="p-6 flex flex-col flex-1">
                       <p className="text-xs font-medium mb-2" style={{ color: '#0d6e8a' }}>
                         {formatarData(post.data)}
                       </p>
-                      <h2
-                        className="font-bold text-lg mb-2 leading-snug group-hover:transition-colors"
-                        style={{ color: '#0A3244' }}
-                      >
+                      <h2 className="font-bold text-lg mb-2 leading-snug" style={{ color: '#0A3244' }}>
                         {post.titulo}
                       </h2>
                       {post.resumo && (
@@ -169,10 +119,30 @@ export default function BlogIndex() {
         </div>
       </main>
 
-      {/* Footer simples */}
       <footer className="py-6 text-center text-sm" style={{ backgroundColor: '#0A3244', color: '#A8CDD9' }}>
         © {new Date().getFullYear()} Baldas Hub Condominial · Niterói/RJ
       </footer>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const client = await clientPromise
+    const posts = await client
+      .db('baldashub')
+      .collection('posts')
+      .find({ publicado: true })
+      .sort({ data: -1 })
+      .project({ conteudo: 0 })
+      .toArray()
+
+    return {
+      props: {
+        posts: posts.map(p => ({ ...p, _id: p._id.toString() })),
+      },
+    }
+  } catch {
+    return { props: { posts: [] } }
+  }
 }
