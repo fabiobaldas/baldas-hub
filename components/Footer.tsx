@@ -72,7 +72,7 @@ export default function Footer() {
                 🔐 Painel do Blog
               </Link>
               <a
-                href={process.env.NEXT_PUBLIC_CONCILIACAO_URL || '#'}
+                href="https://conciliacao-baldashub.onrender.com"
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm transition-colors"
