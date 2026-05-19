@@ -21,7 +21,7 @@ export default function Hero() {
             </h1>
 
             <p className="text-lg leading-relaxed mb-8 max-w-lg" style={{ color: '#4A6572' }}>
-              Gestão financeira, jurídica e operacional com transparência total para síndicos e moradores.
+              Gestão financeira e operacional com transparência total para moradores.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
