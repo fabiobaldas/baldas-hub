@@ -7,7 +7,6 @@ const inclusoesStart = [
 
 const inclusoesCustom = [
   'Tudo do plano Start',
-  'Gestão de pessoal e folha',
   'Compliance e obrigações legais',
   'Relatórios mensais personalizados',
   'Assembleias ilimitadas',
