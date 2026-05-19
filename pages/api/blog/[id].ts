@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { ObjectId } from 'mongodb'
-import getClient from '../../../lib/mongodb'
+import clientPromise from '../../../lib/mongodb'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query
@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ erro: 'ID inválido' })
   }
 
-  const client = await getClient()
+  const client = await clientPromise
   const col = client.db('baldashub').collection('posts')
 
   if (req.method === 'PUT') {
