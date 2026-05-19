@@ -1,6 +1,5 @@
 const inclusoesStart = [
   'Gestão financeira completa',
-  'Emissão de boletos mensais',
   'Assembleias (até 2 por ano)',
   'Comunicação com moradores',
   'Suporte via WhatsApp',

@@ -1,5 +1,5 @@
 const servicos = [
-  { num: '01', titulo: 'Gestão Financeira', desc: 'Emissão de boletos, prestação de contas mensal, controle de inadimplência e fundo de reserva.' },
+  { num: '01', titulo: 'Gestão Financeira', desc: 'Prestação de contas mensal, controle de inadimplência e fundo de reserva.' },
   { num: '02', titulo: 'Assembleias e Atas', desc: 'Convocação, condução de reuniões e elaboração de atas com validade legal.' },
   { num: '03', titulo: 'Manutenção Predial', desc: 'Contratos com fornecedores, orçamentos comparativos e acompanhamento de obras.' },
   { num: '04', titulo: 'Gestão de Pessoal', desc: 'Folha de pagamento, férias, encargos sociais e gestão de porteiros e zeladores.' },
