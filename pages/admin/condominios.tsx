@@ -52,7 +52,7 @@ async function salvarCondominios(lista: Condominio[]): Promise<void> {
 export default function AdminCondominios() {
   const [autenticado, setAutenticado] = useState(false)
   const [condominios, setCondominios] = useState<Condominio[]>([])
-  const [form, setForm] = useState({ nome: '', endereco: '', unidades: '' })
+  const [form, setForm] = useState({ nome: '', endereco: '', unidades: '', lat: '', lng: '' })
   const [geocoding, setGeocoding] = useState(false)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
@@ -89,23 +89,38 @@ export default function AdminCondominios() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.nome.trim() || !form.endereco.trim()) return
-    setGeocoding(true)
     setErro('')
-    const coords = await geocodificar(form.endereco)
+
+    // Se lat/lng já preenchidos manualmente, usa direto
+    const latManual = parseFloat(form.lat.replace(',', '.'))
+    const lngManual = parseFloat(form.lng.replace(',', '.'))
+    const coordsManuais = !isNaN(latManual) && !isNaN(lngManual)
+      ? { lat: latManual, lng: lngManual }
+      : null
+
+    let coords = coordsManuais
     if (!coords) {
-      setErro('Endereço não encontrado. Tente ser mais específico, ex: "Rua das Flores, 100, Icaraí".')
-      setGeocoding(false)
-      return
+      setGeocoding(true)
+      coords = await geocodificar(form.endereco)
+      if (!coords) {
+        setErro('Endereço não encontrado. Preencha latitude e longitude manualmente.')
+        setGeocoding(false)
+        return
+      }
+      // Preenche os campos com as coords encontradas
+      setForm(f => ({ ...f, lat: coords!.lat.toFixed(6), lng: coords!.lng.toFixed(6) }))
     }
+
+    const dados = { nome: form.nome, endereco: form.endereco, unidades: form.unidades, ...coords }
     if (editId !== null) {
-      await salvar(condominios.map(c => (c.id === editId ? { ...c, ...form, ...coords } : c)))
+      await salvar(condominios.map(c => (c.id === editId ? { ...c, ...dados } : c)))
       setEditId(null)
       mostrarSucesso('Condomínio atualizado com sucesso!')
     } else {
-      await salvar([...condominios, { id: Date.now(), ...form, ...coords }])
+      await salvar([...condominios, { id: Date.now(), ...dados }])
       mostrarSucesso('Condomínio adicionado ao mapa!')
     }
-    setForm({ nome: '', endereco: '', unidades: '' })
+    setForm({ nome: '', endereco: '', unidades: '', lat: '', lng: '' })
     setGeocoding(false)
   }
 
@@ -117,7 +132,7 @@ export default function AdminCondominios() {
   }
 
   const editar = (c: Condominio) => {
-    setForm({ nome: c.nome, endereco: c.endereco, unidades: c.unidades })
+    setForm({ nome: c.nome, endereco: c.endereco, unidades: c.unidades, lat: c.lat.toFixed(6), lng: c.lng.toFixed(6) })
     setEditId(c.id)
     setErro('')
     formRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -125,7 +140,7 @@ export default function AdminCondominios() {
 
   const cancelarEdicao = () => {
     setEditId(null)
-    setForm({ nome: '', endereco: '', unidades: '' })
+    setForm({ nome: '', endereco: '', unidades: '', lat: '', lng: '' })
     setErro('')
   }
 
@@ -260,6 +275,38 @@ export default function AdminCondominios() {
                   style={{ border: '1px solid #D6E8EF', color: '#0F1923', backgroundColor: '#F8FAFB' }}
                 />
               </div>
+
+              {/* Lat / Lng — preenchidos após geocodificação ou manualmente */}
+              <div>
+                <label className="text-xs font-semibold block mb-1.5" style={{ color: '#4A6572' }}>
+                  Latitude <span style={{ color: '#A8CDD9', fontWeight: 400 }}>(opcional — ajuste fino)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: -22.923456"
+                  value={form.lat}
+                  onChange={e => setForm({ ...form, lat: e.target.value })}
+                  className="w-full text-sm px-3 py-2.5 rounded-xl outline-none font-mono"
+                  style={{ border: '1px solid #D6E8EF', color: '#0F1923', backgroundColor: '#F8FAFB' }}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold block mb-1.5" style={{ color: '#4A6572' }}>
+                  Longitude <span style={{ color: '#A8CDD9', fontWeight: 400 }}>(opcional — ajuste fino)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: -43.178901"
+                  value={form.lng}
+                  onChange={e => setForm({ ...form, lng: e.target.value })}
+                  className="w-full text-sm px-3 py-2.5 rounded-xl outline-none font-mono"
+                  style={{ border: '1px solid #D6E8EF', color: '#0F1923', backgroundColor: '#F8FAFB' }}
+                />
+              </div>
+              <div className="sm:col-span-3" style={{ fontSize: '0.75rem', color: '#8FA3AE' }}>
+                💡 Deixe lat/lng em branco para busca automática pelo endereço. Ou preencha manualmente com as coordenadas do Google Maps (clique direito no local → "O que há aqui?").
+              </div>
+
               <div className="sm:col-span-3 flex flex-wrap items-center gap-3">
                 <button
                   type="submit"
