@@ -24,7 +24,7 @@ const ferramentas = [
     icon: '🏢',
     titulo: 'Nossos Condomínios',
     descricao: 'Gerenciar os condomínios exibidos no mapa interativo.',
-    href: '/#mapa',
+    href: '/admin/condominios',
     externo: false,
     cor: '#0d475c',
     bgCor: '#EEF4F7',
@@ -243,13 +243,13 @@ export default function AdminPortal() {
               >
                 📖 Ver blog público
               </Link>
-              <a
-                href="/#mapa"
+              <Link
+                href="/admin/condominios"
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                 style={{ backgroundColor: '#F0F5F7', color: '#0d475c' }}
               >
                 🗺️ Gerenciar mapa
-              </a>
+              </Link>
               <a
                 href="https://conciliacao-baldashub.onrender.com"
                 target="_blank"

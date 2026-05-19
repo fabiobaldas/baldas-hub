@@ -10,7 +10,7 @@ export default function Hero() {
               className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-6"
               style={{ backgroundColor: '#F0F5F7', color: '#0d6e8a', border: '1px solid #A8CDD9' }}
             >
-              Administração Condominial em Niterói/RJ
+              Síndico Profissional em Niterói/RJ
             </span>
 
             <h1
@@ -52,7 +52,7 @@ export default function Hero() {
               {[
                 { valor: '1+', label: 'Condomínios' },
                 { valor: 'Niterói', label: 'Região de atuação' },
-                { valor: '2026', label: 'Desde' },
+                { valor: '2025', label: 'Desde' },
               ].map((m, i) => (
                 <div key={i} className={i > 0 ? 'pl-6' : ''} style={i > 0 ? { borderLeft: '1px solid #D6E8EF' } : {}}>
                   <p className="font-bold text-2xl" style={{ color: '#0A3244' }}>{m.valor}</p>
@@ -72,7 +72,7 @@ export default function Hero() {
               <p className="text-sm font-medium mb-6" style={{ color: '#A8CDD9' }}>Por que escolher a Baldas Hub?</p>
               <ul className="space-y-5">
                 {[
-                  { titulo: 'Transparência Total', desc: 'Prestação de contas mensal com acesso a todos os documentos' },
+                  { titulo: 'Transparência Total', desc: 'Prestação de contas mensal, controle de inadimplência e fundo de reserva.' },
                   { titulo: 'Atendimento Ágil', desc: 'Respostas em até 24h úteis para síndicos e moradores' },
                   { titulo: 'Experiência Local', desc: 'Equipe especializada no mercado condominial de Niterói' },
                   { titulo: 'Conformidade Legal', desc: 'CNPJ, AVCB e todas as obrigações regulatórias em dia' },
